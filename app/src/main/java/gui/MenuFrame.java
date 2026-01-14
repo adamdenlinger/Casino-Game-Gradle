@@ -1,10 +1,14 @@
 package gui;
 
-import javax.swing.*;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import types.GameSession;
-
-import java.awt.*;
+import types.Money;
 
 public class MenuFrame extends JFrame {
 

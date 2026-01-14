@@ -2,7 +2,6 @@ package types;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.lang.Math;
 
 public class Deck {
     ArrayList<Integer> deck = new ArrayList<>(Arrays.asList(
@@ -39,19 +38,19 @@ public class Deck {
         deck.remove(randInt);
     }
 
-    void AddAces() {
+    public void AddAces() {
         for (int i = 0; i < 4; i++) {
             deck.add(1);
         }
     }
 
-    void RemoveAces() {
+    public void RemoveAces() {
         for (int i = 0; i < 4; i++) {
             deck.remove(Integer.valueOf(1));
         }
     }
 
-    int DistributeHouse(Player house) {
+    public int DistributeHouse(Player house) {
         int randInt = (int) (Math.random() * deck.size());
         int num = deck.get(randInt);
         house.hand.add(deck.get(randInt));
@@ -59,7 +58,7 @@ public class Deck {
         return num;
     }
 
-    int DistributePlayer(Player player) {
+    public int DistributePlayer(Player player) {
         int randInt = (int) (Math.random() * deck.size());
         int num = deck.get(randInt);
         player.hand.add(deck.get(randInt));
@@ -80,7 +79,7 @@ public class Deck {
      * }
      */
 
-    void ResetDeck(Player player, Player house) {
+    public void ResetDeck(Player player, Player house) {
         deck.addAll(player.hand);
         player.hand.clear();
 

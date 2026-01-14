@@ -21,7 +21,7 @@ public class GameSession {
         }
     }
 
-    boolean PlayerHasDuplicate() {
+    public boolean PlayerHasDuplicate() {
         boolean hasDuplicate = false;
 
         for (int i = 0; i < player.hand.size(); i++) {
@@ -38,7 +38,7 @@ public class GameSession {
         return hasDuplicate;
     }
 
-    boolean HouseHasDuplicate() {
+    public boolean HouseHasDuplicate() {
         boolean hasDuplicate = false;
 
         for (int i = 0; i < house.hand.size(); i++) {

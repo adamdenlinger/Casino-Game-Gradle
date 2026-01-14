@@ -1,8 +1,22 @@
 package gui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+
 import types.GameSession;
+import types.Money;
 
 public class SlowFrame extends JFrame {
 
@@ -11,6 +25,18 @@ public class SlowFrame extends JFrame {
     private JLabel houseHandLabel;
     private JLabel playerHandLabel;
     private JLabel statusLabel;
+    private JLabel moneyLabel;
+
+    private JButton dealHouseButton;
+    private JButton dealPlayerButton;
+    private JButton startButton;
+    private JButton resetButton;
+
+    private boolean playerWon = false;
+
+    private JSpinner bet;
+
+    private int betAmount;
 
     // Make this a field so other methods/listeners can use it
     private JPanel gamePanel;
@@ -41,7 +67,6 @@ public class SlowFrame extends JFrame {
     }
 
     // ===================== PANELS =====================
-
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension(0, 60));
@@ -51,7 +76,16 @@ public class SlowFrame extends JFrame {
         title.setForeground(Color.WHITE);
         title.setFont(new Font("SansSerif", Font.BOLD, 18));
 
-        panel.add(title);
+        moneyLabel = new JLabel("Money: $" + Money.getAmount());
+        moneyLabel.setForeground(Color.WHITE);
+        moneyLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+
+        panel.add(title, BorderLayout.WEST);
+        panel.add(moneyLabel, BorderLayout.EAST);
+
+        title.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        moneyLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
+
         return panel;
     }
 
@@ -95,13 +129,29 @@ public class SlowFrame extends JFrame {
 
     // ===================== BUTTONS / LOGIC =====================
     private void addStartControls() {
-        JButton startButton = new JButton("Start Slow Game");
-        JButton backButton = new JButton("Back");
+        startButton = new JButton("Start Slow Game");
+        bet = new JSpinner(
+                new SpinnerNumberModel(
+                        10, // initial value
+                        1, // min
+                        1000, // max
+                        5 // step
+                )
+        );
+        dealHouseButton = new JButton("Deal House");
+        dealPlayerButton = new JButton("Deal Player");
+        resetButton = new JButton("Reset Game");
+        dealHouseButton.setEnabled(false);
+        dealPlayerButton.setEnabled(false);
+        resetButton.setEnabled(false);
 
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         controls.setOpaque(false);
         controls.add(startButton);
-        controls.add(backButton);
+        controls.add(bet);
+        controls.add(dealHouseButton);
+        controls.add(dealPlayerButton);
+        controls.add(resetButton);
 
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.setOpaque(false);
@@ -117,12 +167,25 @@ public class SlowFrame extends JFrame {
             gamePanel.revalidate();
             gamePanel.repaint();
 
+            if((Integer) bet.getValue() > Money.getAmount()) {
+                statusLabel.setText("Bet exceeds available money! Adjust your bet.");
+                startButton.setEnabled(true);
+                return;
+            }
+            betAmount = (Integer) bet.getValue();
+
             onStartRound1();
         });
 
-        backButton.addActionListener(e -> {
-            dispose();
-            new MenuFrame();
+        dealHouseButton.addActionListener(e -> {
+            HouseTurn();
+        });
+        dealPlayerButton.addActionListener(e -> {
+            PlayerTurn();
+        });
+
+        resetButton.addActionListener(e -> {
+            GameReset(playerWon);
         });
     }
 
@@ -138,12 +201,16 @@ public class SlowFrame extends JFrame {
 
         if (result == 0) {
             statusLabel.setText("Player wins Round 1!");
-            // optionally disable further actions / show "Play Again"
+            playerWon = true;
+            resetButton.setEnabled(true);
         } else if (result == 1) {
             statusLabel.setText("House wins Round 1!");
+            playerWon = false;
+            resetButton.setEnabled(true);
         } else {
-            statusLabel.setText("No winner yet — proceed to Round 2.");
-            // optionally enable "Round 2" button
+            statusLabel.setText("No winner yet - House must draw.");
+            session.deck.AddAces();
+            dealHouseButton.setEnabled(true);
         }
 
         gamePanel.revalidate();
@@ -151,11 +218,76 @@ public class SlowFrame extends JFrame {
     }
 
     private void HouseTurn() {
-        
+        int result = session.deck.DistributeHouse(session.house);
+        houseHandLabel.setText("House: " + session.house.hand);
+        if (result == 1) {
+            statusLabel.setText("House drew an Ace! House wins!");
+            dealHouseButton.setEnabled(false);
+            dealPlayerButton.setEnabled(false);
+            playerWon = false;
+            resetButton.setEnabled(true);
+        } else if (session.HouseHasDuplicate() == true) {
+            statusLabel.setText("House drew a " + result + " and now has a pair! House wins!");
+            dealHouseButton.setEnabled(false);
+            dealPlayerButton.setEnabled(false);
+            playerWon = false;
+            resetButton.setEnabled(true);
+        } else {
+            statusLabel.setText("House drew a " + result + ". Now Player's turn.");
+            dealHouseButton.setEnabled(false);
+            dealPlayerButton.setEnabled(true);
+        }
+        gamePanel.revalidate();
+        gamePanel.repaint();
     }
 
     private void PlayerTurn() {
-
+        int result = session.deck.DistributePlayer(session.player);
+        playerHandLabel.setText("Player: " + session.player.hand);
+        if (result == 1) {
+            statusLabel.setText("Player drew an Ace! House wins!");
+            dealHouseButton.setEnabled(false);
+            dealPlayerButton.setEnabled(false);
+            playerWon = false;
+            resetButton.setEnabled(true);
+        } else if (session.PlayerHasDuplicate() == true) {
+            statusLabel.setText("Player drew a " + result + " and now has a pair! Player wins!");
+            dealHouseButton.setEnabled(false);
+            dealPlayerButton.setEnabled(false);
+            playerWon = true;
+            resetButton.setEnabled(true);
+        } else {
+            statusLabel.setText("Player drew a " + result + ". Now House's turn.");
+            dealHouseButton.setEnabled(true);
+            dealPlayerButton.setEnabled(false);
+        }
+        gamePanel.revalidate();
+        gamePanel.repaint();
     }
 
+    private void GameReset(boolean playerWon) {
+        resetButton.setEnabled(false);
+
+        if (playerWon) {
+            Money.add(betAmount);
+        } else {
+            Money.add(-betAmount);
+        }
+
+        moneyLabel.setText("Money: $" + Money.getAmount());
+
+        session.deck.ResetDeck(session.player, session.house);
+        session.deck.RemoveAces();
+
+        houseHandLabel.setText("House: (not dealt)");
+        playerHandLabel.setText("Player: (not dealt)");
+        statusLabel.setText("Press Start to deal");
+
+        startButton.setEnabled(true);
+        dealHouseButton.setEnabled(false);
+        dealPlayerButton.setEnabled(false);
+
+        gamePanel.revalidate();
+        gamePanel.repaint();
+    }
 }

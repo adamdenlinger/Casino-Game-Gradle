@@ -1,10 +1,15 @@
 package gui;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import types.GameSession;
-
-import java.awt.*;
 
 public class FastFrame extends JFrame {
 

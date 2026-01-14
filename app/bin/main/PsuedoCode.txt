@@ -1,0 +1,52 @@
+1. At the start of the game, you press the slow or fast button to decide how many times you would like to play the game
+2. if you chose fast it would run 10,000 times and give you the results like how much money you gained/losed and how many games you won
+
+(GUI) Menu Screen - 2 buttons
+ [SLOW]  &  [FAST]
+
+Clicking slow:
+1. Disposes MenuFrame
+2. Creates new GameSession session
+    -Player
+    -House
+    -Deck
+3. Creates SlowFrame with GameSession
+
+---SLOWGAME---
+Loop || the game continues until ran ten times
+    1. enter bet amount and click start game
+    2. distributes cards
+    3. displayes the dealt cards
+    4. checks for a winner
+        if | HOUSE wins
+            HOUSE win counter goes up by one
+            BET is then taken by HOUSE
+        if | PLAYER wins
+            PLAYER win counter goes up by one
+            PLAYER money count goes up by BET
+        if | no one wins
+            BET is doubled
+            four aces are shuffled into DECK
+            Loop || until PLAYER or HOUSE draws a pair
+                HOUSE draws a card
+                that card is removed from the deck
+                PLAYER draws a card
+                that card is removed from the deck
+
+
+
+
+
+
+
+
+
+
+
+Clicking fast:
+1. Disposes MenuFrame
+2. Creates new GameSession session
+    -Player
+    -House
+    -Deck
+3. Creates FastFrame with GameSession
