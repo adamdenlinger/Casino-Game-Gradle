@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Deck {
+
     ArrayList<String> deck = new ArrayList<>(Arrays.asList(
             "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", // Hearts
             "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", // Clubs
@@ -78,13 +79,23 @@ public class Deck {
      * }
      * }
      */
-
-    public void ResetDeck(Player player, Player house) {
-        deck.addAll(player.hand);
-        player.hand.clear();
-
-        deck.addAll(house.hand);
-        house.hand.clear();
+    @Override
+    public String toString() {
+        return deck.toString(); // or whatever represents your deck
     }
 
+    private final ArrayList<String> base48 = new ArrayList<>(Arrays.asList(
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K",
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K",
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K",
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"
+    ));
+
+    public void ResetDeck(Player player, Player house) {
+        player.hand.clear();
+        house.hand.clear();
+
+        deck.clear();
+        deck.addAll(base48);
+    }
 }

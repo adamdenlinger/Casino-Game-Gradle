@@ -3,7 +3,14 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import types.GameSession;
 
@@ -85,25 +92,53 @@ public class FastFrame extends JFrame {
         outputArea.append("Player wins: " + playerWins + "\n");
         outputArea.append("House wins: " + houseWins + "\n");
         outputArea.append(String.format("Win rate: %.2f%%\n", winRate));
+        outputArea.append(session.deck.toString() + "\n\n");
+
+        double bet = 10.0;
+
+        double totalGames = playerWins + houseWins;
+        double evPerGame = bet * (playerWins - houseWins) / totalGames;
+
+        outputArea.append(String.format("Bet per Game: $%.2f\n", bet));
+        outputArea.append(String.format("Expected Value per Game: $%.2f\n", evPerGame));
     }
 
     /* ---------- YOUR EXISTING LOGIC ---------- */
-
     void PlayGame() {
         session.deck.DistributeRound1(session.player, session.house);
         int round1 = Round1();
 
-        if (round1 == 0) {
-            playerWins++;
-        } else if (round1 == 1) {
-            houseWins++;
-        } else {
-            int round2 = Round2();
-            if (round2 == 0) {
+        switch (round1) {
+            case 0 -> {
                 playerWins++;
-            } else {
+            }
+            case 1 -> {
                 houseWins++;
             }
+            case 2 -> {
+                int round2 = Round2();
+                if (round2 == 0) {
+                    playerWins++;
+                } else {
+                    houseWins++;
+                }
+            }
+            case 3 -> {
+                session.player.TransferDuplicates();
+                session.house.TransferDuplicates();
+
+                int round2 = Round2();
+                if (round2 == 0) {
+                    playerWins++;
+                } else {
+                    houseWins++;
+                }
+
+                session.player.ResetHand();
+                session.house.ResetHand();
+            }
+            default ->
+                throw new IllegalStateException("Unexpected round1 value: " + round1);
         }
 
         session.deck.ResetDeck(session.player, session.house);
@@ -111,13 +146,21 @@ public class FastFrame extends JFrame {
     }
 
     int Round1() {
-        if (session.PlayerHasDuplicate() && !session.HouseHasDuplicate()) {
-            return 0;
-        } else if (!session.PlayerHasDuplicate() && session.HouseHasDuplicate()) {
-            return 1;
-        } else {
-            return 2;
-        }
+        boolean playerDup = session.PlayerHasDuplicate();
+        boolean houseDup = session.HouseHasDuplicate();
+
+        return switch (playerDup + ":" + houseDup) {
+            case "true:false" ->
+                0;
+            case "false:true" ->
+                1;
+            case "false:false" ->
+                2;
+            case "true:true" ->
+                3;
+            default ->
+                throw new IllegalStateException("Unexpected state");
+        };
     }
 
     int Round2() {
