@@ -59,7 +59,7 @@ public class GameSession {
 
     public boolean HouseDrawCard() {
         boolean isWinner = false;
-        if (deck.DistributeHouse(house) == 1) {
+        if (deck.DistributeHouse(house) == "A") {
             isWinner = true;
         }
         return isWinner;
@@ -67,7 +67,7 @@ public class GameSession {
 
     public boolean PlayerDrawCard() {
         boolean isWinner = false;
-        if (deck.DistributePlayer(player) == 1) {
+        if (deck.DistributePlayer(player) == "A") {
             isWinner = true;
         }
         return isWinner;

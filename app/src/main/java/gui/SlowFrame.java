@@ -221,22 +221,22 @@ public class SlowFrame extends JFrame {
     }
 
     private void HouseTurn() {
-        int result = session.deck.DistributeHouse(session.house);
+        String card = session.deck.DistributeHouse(session.house);
         houseHandLabel.setText("House: " + session.house.hand);
-        if (result == 1) {
+        if (card == "A") {
             statusLabel.setText("House drew an Ace! House wins!");
             dealHouseButton.setEnabled(false);
             dealPlayerButton.setEnabled(false);
             playerWon = false;
             resetButton.setEnabled(true);
         } else if (session.HouseHasDuplicate() == true) {
-            statusLabel.setText("House drew a " + result + " and now has a pair! House wins!");
+            statusLabel.setText("House drew a " + card + " and now has a pair! House wins!");
             dealHouseButton.setEnabled(false);
             dealPlayerButton.setEnabled(false);
             playerWon = false;
             resetButton.setEnabled(true);
         } else {
-            statusLabel.setText("House drew a " + result + ". Now Player's turn.");
+            statusLabel.setText("House drew a " + card + ". Now Player's turn.");
             dealHouseButton.setEnabled(false);
             dealPlayerButton.setEnabled(true);
         }
@@ -245,22 +245,22 @@ public class SlowFrame extends JFrame {
     }
 
     private void PlayerTurn() {
-        int result = session.deck.DistributePlayer(session.player);
+        String card = session.deck.DistributePlayer(session.player);
         playerHandLabel.setText("Player: " + session.player.hand);
-        if (result == 1) {
+        if (card.equals("A")) {
             statusLabel.setText("Player drew an Ace! House wins!");
             dealHouseButton.setEnabled(false);
             dealPlayerButton.setEnabled(false);
             playerWon = false;
             resetButton.setEnabled(true);
         } else if (session.PlayerHasDuplicate() == true) {
-            statusLabel.setText("Player drew a " + result + " and now has a pair! Player wins!");
+            statusLabel.setText("Player drew a " + card + " and now has a pair! Player wins!");
             dealHouseButton.setEnabled(false);
             dealPlayerButton.setEnabled(false);
             playerWon = true;
             resetButton.setEnabled(true);
         } else {
-            statusLabel.setText("Player drew a " + result + ". Now House's turn.");
+            statusLabel.setText("Player drew a " + card + ". Now House's turn.");
             dealHouseButton.setEnabled(true);
             dealPlayerButton.setEnabled(false);
         }

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Deck {
-    ArrayList<Integer> deck = new ArrayList<>(Arrays.asList(
-            2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Hearts
-            2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Clubs
-            2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, // Diamonds
-            2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 // Spades
+    ArrayList<String> deck = new ArrayList<>(Arrays.asList(
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", // Hearts
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", // Clubs
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", // Diamonds
+            "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" // Spades
     ));
 
     public void DistributeRound1(Player player, Player house) {
@@ -40,30 +40,30 @@ public class Deck {
 
     public void AddAces() {
         for (int i = 0; i < 4; i++) {
-            deck.add(1);
+            deck.add("A");
         }
     }
 
     public void RemoveAces() {
         for (int i = 0; i < 4; i++) {
-            deck.remove(Integer.valueOf(1));
+            deck.remove(String.valueOf("A"));
         }
     }
 
-    public int DistributeHouse(Player house) {
+    public String DistributeHouse(Player house) {
         int randInt = (int) (Math.random() * deck.size());
-        int num = deck.get(randInt);
+        String card = deck.get(randInt);
         house.hand.add(deck.get(randInt));
         deck.remove(randInt);
-        return num;
+        return card;
     }
 
-    public int DistributePlayer(Player player) {
+    public String DistributePlayer(Player player) {
         int randInt = (int) (Math.random() * deck.size());
-        int num = deck.get(randInt);
+        String card = deck.get(randInt);
         player.hand.add(deck.get(randInt));
         deck.remove(randInt);
-        return num;
+        return card;
     }
 
     /*
@@ -87,5 +87,4 @@ public class Deck {
         house.hand.clear();
     }
 
-    
 }

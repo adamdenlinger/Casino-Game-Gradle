@@ -3,12 +3,12 @@ package types;
 import java.util.ArrayList;
 
 public class Player {
-    public ArrayList<Integer> hand = new ArrayList<Integer>();
-    public ArrayList<Integer> holder = new ArrayList<Integer>();
-    public ArrayList<Integer> temp = new ArrayList<Integer>();
+    public ArrayList<String> hand = new ArrayList<String>();
+    public ArrayList<String> holder = new ArrayList<String>();
+    public ArrayList<String> temp = new ArrayList<String>();
 
     public void TransferDuplicates() {
-        for (Integer num : hand) {
+        for (String num : hand) {
             if (!holder.contains(num)) {
                 holder.add(num);
             }
