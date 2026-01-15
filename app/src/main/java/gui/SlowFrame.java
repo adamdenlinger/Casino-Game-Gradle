@@ -33,6 +33,7 @@ public class SlowFrame extends JFrame {
     private JButton resetButton;
 
     private boolean playerWon = false;
+    private boolean bothHaveDupes = false;
 
     private JSpinner bet;
 
@@ -191,14 +192,10 @@ public class SlowFrame extends JFrame {
 
     private void onStartRound1() {
         session.deck.DistributeRound1(session.player, session.house);
-
-        // show hands
         houseHandLabel.setText("House: " + session.house.hand);
         playerHandLabel.setText("Player: " + session.player.hand);
 
         int result = session.Round1();
-        // whatever your Round1 returns: 0=player, 1=house, 2=tie/continue
-
         if (result == 0) {
             statusLabel.setText("Player wins Round 1!");
             playerWon = true;
@@ -211,6 +208,12 @@ public class SlowFrame extends JFrame {
             statusLabel.setText("No winner yet - House must draw.");
             session.deck.AddAces();
             dealHouseButton.setEnabled(true);
+        }
+
+        if(session.HouseHasDuplicate() == true && session.PlayerHasDuplicate()) {
+            bothHaveDupes = true;
+            session.player.TransferDuplicates();
+            session.house.TransferDuplicates();
         }
 
         gamePanel.revalidate();
@@ -276,6 +279,10 @@ public class SlowFrame extends JFrame {
 
         moneyLabel.setText("Money: $" + Money.getAmount());
 
+        if(bothHaveDupes) {
+            session.player.ResetHand();
+            session.house.ResetHand();
+        }
         session.deck.ResetDeck(session.player, session.house);
         session.deck.RemoveAces();
 

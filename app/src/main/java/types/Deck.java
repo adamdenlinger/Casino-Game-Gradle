@@ -86,4 +86,6 @@ public class Deck {
         deck.addAll(house.hand);
         house.hand.clear();
     }
+
+    
 }
