@@ -24,4 +24,17 @@ public class Player {
     public void ResetHand() {
         hand = new ArrayList<>(temp);
     }
+
+    public void RemoveDuplicates() {
+        holder.clear();                 // IMPORTANT
+
+        for (String num : hand) {
+            if (!holder.contains(num)) {
+                holder.add(num);
+            }
+        }
+
+        hand = new ArrayList<>(holder); // deduped
+    }
+
 }

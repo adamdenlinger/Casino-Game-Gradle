@@ -18,8 +18,11 @@ public class FastFrame extends JFrame {
 
     private final GameSession session;
 
-    private int playerWins = 0;
-    private int houseWins = 0;
+    private int playerWins1 = 0;
+    private int houseWins1 = 0;
+    private int playerWins2 = 0;
+    private int houseWins2 = 0;
+    private int round2Games = 0;
 
     // GUI components
     private JTextField timesField;
@@ -70,8 +73,10 @@ public class FastFrame extends JFrame {
     /* ---------- SIMULATION ---------- */
     private void runSimulation() {
         outputArea.setText(""); // clear previous output
-        playerWins = 0;
-        houseWins = 0;
+        playerWins1 = 0;
+        houseWins1 = 0;
+        playerWins2 = 0;
+        houseWins2 = 0;
 
         int times;
 
@@ -86,18 +91,21 @@ public class FastFrame extends JFrame {
             PlayGame();
         }
 
-        double winRate = (double) playerWins / (playerWins + houseWins) * 100;
+        double winRate = (double) (playerWins1 + playerWins2) / ((playerWins1 + playerWins2) + (houseWins1 + houseWins2)) * 100;
 
         outputArea.append("Simulation complete!\n\n");
-        outputArea.append("Player wins: " + playerWins + "\n");
-        outputArea.append("House wins: " + houseWins + "\n");
+        outputArea.append("Round 1 Player wins: " + playerWins1 + " * 10" + "\n");
+        outputArea.append("Round 1 House wins: " + houseWins1 + " * 10" + "\n");
+        outputArea.append("Round 2 Player wins: " + playerWins2 + " * 20" + "\n");
+        outputArea.append("Round 2 House wins: " + houseWins2 + " * 10" + "\n");
+        outputArea.append(session.deck.toString() + "\n");
         outputArea.append(String.format("Win rate: %.2f%%\n", winRate));
-        outputArea.append(session.deck.toString() + "\n\n");
+        outputArea.append("\n\n");
 
         double bet = 10.0;
 
-        double totalGames = playerWins + houseWins;
-        double evPerGame = bet * (playerWins - houseWins) / totalGames;
+        double totalGames = (playerWins1 + playerWins2) + (houseWins1 + houseWins2);
+        double evPerGame = ((bet * (playerWins1 - houseWins1)) + ((bet * 2 * playerWins2) - (bet * houseWins2))) / totalGames;
 
         outputArea.append(String.format("Bet per Game: $%.2f\n", bet));
         outputArea.append(String.format("Expected Value per Game: $%.2f\n", evPerGame));
@@ -110,28 +118,28 @@ public class FastFrame extends JFrame {
 
         switch (round1) {
             case 0 -> {
-                playerWins++;
+                playerWins1++;
             }
             case 1 -> {
-                houseWins++;
+                houseWins1++;
             }
             case 2 -> {
                 int round2 = Round2();
                 if (round2 == 0) {
-                    playerWins++;
+                    playerWins2++;
                 } else {
-                    houseWins++;
+                    houseWins2++;
                 }
             }
             case 3 -> {
-                session.player.TransferDuplicates();
-                session.house.TransferDuplicates();
+                session.player.RemoveDuplicates();
+                session.house.RemoveDuplicates();
 
                 int round2 = Round2();
                 if (round2 == 0) {
-                    playerWins++;
+                    playerWins2++;
                 } else {
-                    houseWins++;
+                    houseWins2++;
                 }
 
                 session.player.ResetHand();
@@ -167,6 +175,7 @@ public class FastFrame extends JFrame {
         session.deck.AddAces();
 
         while (true) {
+
             if ("A".equals(session.deck.DistributeHouse(session.house))) {
                 return 1;
             }
@@ -180,5 +189,6 @@ public class FastFrame extends JFrame {
                 return 0;
             }
         }
+
     }
 }
