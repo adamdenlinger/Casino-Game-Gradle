@@ -34,6 +34,7 @@ public class SlowFrame extends JFrame {
 
     private boolean playerWon = false;
     private boolean bothHaveDupes = false;
+    private boolean round2 = false;
 
     private JSpinner bet;
 
@@ -42,6 +43,7 @@ public class SlowFrame extends JFrame {
     // Make this a field so other methods/listeners can use it
     private JPanel gamePanel;
 
+    // initializes slowframe with the current game session
     public SlowFrame(GameSession session) {
         this.session = session;
 
@@ -68,6 +70,7 @@ public class SlowFrame extends JFrame {
     }
 
     // ===================== PANELS =====================
+    // Creates the header panel
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension(0, 60));
@@ -90,6 +93,7 @@ public class SlowFrame extends JFrame {
         return panel;
     }
 
+    // Creates the main game panel
     private JPanel createGamePanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(new Color(60, 120, 60)); // table green
@@ -113,6 +117,7 @@ public class SlowFrame extends JFrame {
         return panel;
     }
 
+    // Creates the footer panel
     private JPanel createFooterPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         panel.setPreferredSize(new Dimension(0, 50));
@@ -121,7 +126,7 @@ public class SlowFrame extends JFrame {
         JButton exitButton = new JButton("Exit to Menu");
         exitButton.addActionListener(e -> {
             dispose();
-            new MenuFrame(); // if MenuFrame needs session, pass it appropriately
+            new MenuFrame();
         });
 
         panel.add(exitButton);
@@ -137,8 +142,7 @@ public class SlowFrame extends JFrame {
                         1, // min
                         1000, // max
                         5 // step
-                )
-        );
+                ));
         dealHouseButton = new JButton("Deal House");
         dealPlayerButton = new JButton("Deal Player");
         resetButton = new JButton("Reset Game");
@@ -168,7 +172,7 @@ public class SlowFrame extends JFrame {
             gamePanel.revalidate();
             gamePanel.repaint();
 
-            if((Integer) bet.getValue() > Money.getAmount()) {
+            if ((Integer) bet.getValue() > Money.getAmount()) {
                 statusLabel.setText("Bet exceeds available money! Adjust your bet.");
                 startButton.setEnabled(true);
                 return;
@@ -190,6 +194,8 @@ public class SlowFrame extends JFrame {
         });
     }
 
+    // ===================== GAME LOGIC METHODS =====================
+    // starts round 1 of the slow game and returns the result
     private void onStartRound1() {
         session.deck.DistributeRound1(session.player, session.house);
         houseHandLabel.setText("House: " + session.house.hand);
@@ -205,21 +211,24 @@ public class SlowFrame extends JFrame {
             playerWon = false;
             resetButton.setEnabled(true);
         } else {
-            statusLabel.setText("No winner yet - House must draw.");
-            session.deck.AddAces();
-            dealHouseButton.setEnabled(true);
-        }
-
-        if(session.HouseHasDuplicate() == true && session.PlayerHasDuplicate()) {
-            bothHaveDupes = true;
-            session.player.TransferDuplicates();
-            session.house.TransferDuplicates();
+            round2 = true;
+            if (session.HouseHasDuplicate() == true && session.PlayerHasDuplicate()) {
+                bothHaveDupes = true;
+                session.player.TransferDuplicates();
+                session.house.TransferDuplicates();
+            } else {
+                statusLabel.setText("No winner yet - House must draw.");
+                session.deck.AddAces();
+                dealHouseButton.setEnabled(true);
+            }
         }
 
         gamePanel.revalidate();
         gamePanel.repaint();
+
     }
 
+    // handles the house's turn in the slow game
     private void HouseTurn() {
         String card = session.deck.DistributeHouse(session.house);
         houseHandLabel.setText("House: " + session.house.hand);
@@ -244,6 +253,7 @@ public class SlowFrame extends JFrame {
         gamePanel.repaint();
     }
 
+    // handles the player's turn in the slow game
     private void PlayerTurn() {
         String card = session.deck.DistributePlayer(session.player);
         playerHandLabel.setText("Player: " + session.player.hand);
@@ -268,8 +278,13 @@ public class SlowFrame extends JFrame {
         gamePanel.repaint();
     }
 
+    // resets the game state after a round is completed
     private void GameReset(boolean playerWon) {
         resetButton.setEnabled(false);
+
+        if(round2 == true) {
+            betAmount *= 2;
+        }
 
         if (playerWon) {
             Money.add(betAmount);
@@ -277,9 +292,11 @@ public class SlowFrame extends JFrame {
             Money.add(-betAmount);
         }
 
+        round2 = false;
+
         moneyLabel.setText("Money: $" + Money.getAmount());
 
-        if(bothHaveDupes) {
+        if (bothHaveDupes) {
             session.player.ResetHand();
             session.house.ResetHand();
         }

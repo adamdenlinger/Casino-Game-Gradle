@@ -82,18 +82,21 @@ public class FastFrame extends JFrame {
             return;
         }
 
+        //plays the game for an amount of times the player chose
         for (int i = 0; i < times; i++) {
             PlayGame();
         }
 
+        // calculates the win rate
         double winRate = (double) playerWins / (playerWins + houseWins) * 100;
 
         outputArea.append("Simulation complete!\n\n");
         outputArea.append("Player wins: " + playerWins + "\n");
         outputArea.append("House wins: " + houseWins + "\n");
         outputArea.append(String.format("Win rate: %.2f%%\n", winRate));
-        outputArea.append(session.deck.toString() + "\n\n");
+        
 
+        // the initial bet
         double bet = 10.0;
 
         double totalGames = playerWins + houseWins;
@@ -104,10 +107,13 @@ public class FastFrame extends JFrame {
     }
 
     /* ---------- YOUR EXISTING LOGIC ---------- */
+
+    //plays the game starting the game on round1 and if a winner isnt chosen the round moves to round2
     void PlayGame() {
         session.deck.DistributeRound1(session.player, session.house);
         int round1 = Round1();
 
+        // decides winner
         switch (round1) {
             case 0 -> {
                 playerWins++;
@@ -128,6 +134,8 @@ public class FastFrame extends JFrame {
                 session.house.TransferDuplicates();
 
                 int round2 = Round2();
+
+                // decides winner
                 if (round2 == 0) {
                     playerWins++;
                 } else {
@@ -146,6 +154,8 @@ public class FastFrame extends JFrame {
     }
 
     int Round1() {
+
+        // checks if the player or house has a duplicate returning the win or push
         boolean playerDup = session.PlayerHasDuplicate();
         boolean houseDup = session.HouseHasDuplicate();
 
@@ -163,6 +173,7 @@ public class FastFrame extends JFrame {
         };
     }
 
+    // plays round2 where aces are added and players draw until someone wins
     int Round2() {
         session.deck.AddAces();
 

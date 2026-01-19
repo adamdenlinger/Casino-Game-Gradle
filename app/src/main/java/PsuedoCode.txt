@@ -13,25 +13,70 @@ Clicking slow:
 3. Creates SlowFrame with GameSession
 
 ---SLOWGAME---
-Loop || the game continues until ran ten times
+Loop || the game runs until you leave
     1. enter bet amount and click start game
     2. distributes cards
     3. displayes the dealt cards
     4. checks for a winner
         if | HOUSE wins
-            HOUSE win counter goes up by one
-            BET is then taken by HOUSE
+            Player loses money
         if | PLAYER wins
-            PLAYER win counter goes up by one
             PLAYER money count goes up by BET
         if | no one wins
             BET is doubled
             four aces are shuffled into DECK
             Loop || until PLAYER or HOUSE draws a pair
                 HOUSE draws a card
-                that card is removed from the deck
+                if is an ACE
+                    HOUSE wins
+                    PLAYER loses BET
+                if HOUSE has a duplicate
+                    HOUSE wins
+                    PLAYER loses BET
                 PLAYER draws a card
+                if is an ACE
+                    HOUSE wins
+                    PLAYER loses BET
+                if PLAYER has a duplicate
+                    PLAYER wins
+                    PLAYER gains BET
                 that card is removed from the deck
+            the game is then reset
+
+---FAST GAME---
+enter the amount of time you want to play
+loop || amount of times played
+    !!! SAME LOGIC !!!
+    2. distributes cards
+    3. displayes the dealt cards
+    4. checks for a winner
+        if | HOUSE wins
+            Player loses money
+        if | PLAYER wins
+            PLAYER money count goes up by BET
+        if | no one wins
+            BET is doubled
+            four aces are shuffled into DECK
+            Loop || until PLAYER or HOUSE draws a pair
+                HOUSE draws a card
+                if is an ACE
+                    HOUSE wins
+                    PLAYER loses BET
+                if HOUSE has a duplicate
+                    HOUSE wins
+                    PLAYER loses BET
+                PLAYER draws a card
+                if is an ACE
+                    HOUSE wins
+                    PLAYER loses BET
+                if PLAYER has a duplicate
+                    PLAYER wins
+                    PLAYER gains BET
+                that card is removed from the deck
+            the game is then reset
+    Prints wins and losses
+    Prints win percentage
+    Prints EV calculation
 
 
 
