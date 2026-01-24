@@ -26,6 +26,8 @@ public class SlowFrame extends JFrame {
     private JLabel playerHandLabel;
     private JLabel statusLabel;
     private JLabel moneyLabel;
+    private JLabel epLabel;
+    private JLabel evLabel;
 
     private JButton dealHouseButton;
     private JButton dealPlayerButton;
@@ -39,8 +41,14 @@ public class SlowFrame extends JFrame {
     private JSpinner bet;
 
     private int betAmount;
+    private int roundsPlayed = 0;
+    private int playerWins = 0;
+
+    private double expectedProbability;
+    private double expectedValue;
 
     // Make this a field so other methods/listeners can use it
+    private JPanel headerPanel;
     private JPanel gamePanel;
 
     // initializes slowframe with the current game session
@@ -54,7 +62,7 @@ public class SlowFrame extends JFrame {
         setLayout(new BorderLayout());
 
         // Create panels
-        JPanel headerPanel = createHeaderPanel();
+        headerPanel = createHeaderPanel();
         gamePanel = createGamePanel(); // assign to field
         JPanel footerPanel = createFooterPanel();
 
@@ -84,8 +92,18 @@ public class SlowFrame extends JFrame {
         moneyLabel.setForeground(Color.WHITE);
         moneyLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
 
+        epLabel = new JLabel("EP: " + EpCalc());
+        epLabel.setForeground(Color.WHITE);
+        epLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        evLabel = new JLabel("EV: " + EvCalc());
+        evLabel.setForeground(Color.WHITE);
+        evLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+
         panel.add(title, BorderLayout.WEST);
         panel.add(moneyLabel, BorderLayout.EAST);
+        panel.add(epLabel, BorderLayout.EAST);
+        panel.add(evLabel, BorderLayout.EAST);
 
         title.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
         moneyLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
@@ -168,9 +186,12 @@ public class SlowFrame extends JFrame {
         gamePanel.add(bottom, BorderLayout.SOUTH);
 
         startButton.addActionListener(e -> {
+            roundsPlayed++;
             startButton.setEnabled(false);
             gamePanel.revalidate();
             gamePanel.repaint();
+            headerPanel.revalidate();
+            headerPanel.repaint();
 
             if ((Integer) bet.getValue() > Money.getAmount()) {
                 statusLabel.setText("Bet exceeds available money! Adjust your bet.");
@@ -206,6 +227,7 @@ public class SlowFrame extends JFrame {
             statusLabel.setText("Player wins Round 1!");
             playerWon = true;
             resetButton.setEnabled(true);
+            playerWins++;
         } else if (result == 1) {
             statusLabel.setText("House wins Round 1!");
             playerWon = false;
@@ -272,6 +294,7 @@ public class SlowFrame extends JFrame {
             dealPlayerButton.setEnabled(false);
             playerWon = true;
             resetButton.setEnabled(true);
+            playerWins++;
         } else {
             statusLabel.setText("Player drew a " + card + ". Now House's turn.");
             dealHouseButton.setEnabled(true);
@@ -285,7 +308,7 @@ public class SlowFrame extends JFrame {
     private void GameReset(boolean playerWon) {
         resetButton.setEnabled(false);
 
-        if(round2 == true && playerWon == true) {
+        if (round2 == true && playerWon == true) {
             betAmount *= 2;
         }
 
@@ -316,5 +339,28 @@ public class SlowFrame extends JFrame {
 
         gamePanel.revalidate();
         gamePanel.repaint();
+        updateHeaderStats();
+        headerPanel.revalidate();
+        headerPanel.repaint();
+    }
+
+    private double EpCalc() {
+        if (roundsPlayed == 0)
+            return 0.0;
+        return (double) playerWins / roundsPlayed;
+    }
+
+    private double EvCalc() {
+        if (roundsPlayed == 0) {
+            System.out.println("Cannot divide by 0");
+            return 0.0;
+        }
+        return (Money.getAmount() - 1000.0) / roundsPlayed;
+    }
+
+    private void updateHeaderStats() {
+        moneyLabel.setText("Money: $" + Money.getAmount());
+        epLabel.setText(String.format("EP: %.0f%%", EpCalc() * 100));
+        evLabel.setText(String.format("EV: $%.2f", EvCalc()));
     }
 }
