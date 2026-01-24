@@ -212,10 +212,13 @@ public class SlowFrame extends JFrame {
             resetButton.setEnabled(true);
         } else {
             round2 = true;
-            if (session.HouseHasDuplicate() == true && session.PlayerHasDuplicate()) {
+            if (session.HouseHasDuplicate() == true && session.PlayerHasDuplicate() == true) {
                 bothHaveDupes = true;
                 session.player.TransferDuplicates();
                 session.house.TransferDuplicates();
+                statusLabel.setText("No winner yet - House must draw.");
+                session.deck.AddAces();
+                dealHouseButton.setEnabled(true);
             } else {
                 statusLabel.setText("No winner yet - House must draw.");
                 session.deck.AddAces();
@@ -282,7 +285,7 @@ public class SlowFrame extends JFrame {
     private void GameReset(boolean playerWon) {
         resetButton.setEnabled(false);
 
-        if(round2 == true) {
+        if(round2 == true && playerWon == true) {
             betAmount *= 2;
         }
 

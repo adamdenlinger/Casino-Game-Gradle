@@ -1,6 +1,13 @@
 // Adam Denlinger
-import javax.swing.SwingUtilities;
+/* This is a GRADLE Project 
+    first install gradle
+    in Terminal:
+    .\gradlew run
+    Or:
+    gradle run
+*/
 
+import javax.swing.SwingUtilities;
 import gui.MenuFrame;
 import types.Money;
 

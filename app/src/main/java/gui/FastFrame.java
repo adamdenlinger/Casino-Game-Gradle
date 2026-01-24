@@ -110,6 +110,7 @@ public class FastFrame extends JFrame {
 
         outputArea.append(String.format("Bet per Game: $%.2f\n", bet));
         outputArea.append(String.format("Expected Value per Game: $%.2f\n", evPerGame));
+        outputArea.append(String.format("Money won/losed: $%.2f\n", evPerGame * totalGames));
     }
 
     /* ---------- YOUR EXISTING LOGIC ---------- */
